@@ -1,0 +1,22 @@
+# django
+Django==4.0.1
+django-crontab==0.7.1
+django-allauth==0.49.0
+# django-bootstrap-v5
+
+# 通知
+# django-notifications-hq==1.7.0
+# channels==3.0.3
+
+# env
+# python-dotenv==0.21.0
+
+# discord
+# discord.py==2.1.0
+# discord-py-slash-command==4.2.1
+# discord-webhook==1.0.0
+# discord-pretty-help==2.0.0
+
+# redis
+# pymemcache==3.4.4
+# channels_redis==3.3.1
