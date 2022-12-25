@@ -1,15 +1,23 @@
-import discord
+import logging
 import os
 import random
+import asyncio
+import discord
+import django
 import interactions
-from dotenv import load_dotenv
 from discord.ext import commands
-from pretty_help import PrettyHelp, EmojiMenu
+from django.conf import settings
+from dotenv import load_dotenv
+from pretty_help import EmojiMenu, PrettyHelp
 
 load_dotenv()
 # 環境變數
 TOKEN = os.getenv('The_Crane_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE',  'GZ_bot.settings')
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+logger = logging.getLogger('bot')
+django.setup()
 
 # client 是我們與 Discord 連結的橋樑
 intents = discord.Intents.default()
@@ -19,60 +27,91 @@ intents.message_content = True
 intents.messages = True
 # client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix="!", intents=intents)
-# bot = interactions.Client(command_prefix='!', token=TOKEN, intents=intents)
 
-# @client.event
-# # bot 啟動設定訊息
-# async def on_ready():
-#     print('目前登入身份：', client.user)
-#     print(TOKEN)
-#     game = discord.Game('與你媽在SWAG上見面')
-#     await client.change_presence(status=discord.Status.online, activity=game)
-#     for guild in client.guilds:
-#         if guild.name == GUILD:
-#             break
-#     print(f'{guild.name}(id: {guild.id})')
+menu = EmojiMenu(active_time=60)
+ending_note = "{ctx.bot.user.name}的使用說明"
+bot.help_command = PrettyHelp(menu=menu, ending_note=ending_note)
+
 
 @bot.event
 async def on_ready():
-    print("Bot in ready")
+    print('目前登入身份：', bot.user)
+    game = discord.Game('與你媽在SWAG上見面')
+    await bot.change_presence(status=discord.Status.online, activity=game)
+    for guild in bot.guilds:
+        if guild.name == GUILD:
+            print(f'guild_name: {guild.name}  guild_id: {guild.id}')
+            break
 
 
-
-# # 加入伺服器通知
-# @client.event
-# async def on_member_join(member):
-#     await member.create_dm()
-#     await member.dm_channel.send(
-#         f' {member.name}, welcome to hell'
-#     )
+@bot.event
+async def on_member_join(member):
+    await member.create_dm()
+    await member.dm_channel.send(
+        f' {member.name}, 玩砸了'
+    )
 
 
 @bot.command()
-async def hello(ctx):
-    await ctx.send(f"!Hi <@{ctx.author.id}>")
+async def load(ctx, extension):
+    await bot.load_extension(f"cmds.{extension}")
 
-# @client.event
-# # 訊息事件
-# async def on_message(message):
-#     # 排除自己的訊息，避免陷入無限循環
-#     if message.author == client.user:
-#         return
-#     #如果包含 ping，機器人回傳 pong
-#     if message.content == 'ping':
-#         await message.channel.send('pog')
-
-#     if message.content.startswith('史粉'):
-#         channel = message.channel
-#         #機器人叫你先跟他說你好
-#         await channel.send('逼逼逼...績優蒿難喝...')
-#         #檢查函式，確認使用者是否在相同頻道打上「你好」
-#         def checkmessage(m):
-#             return m.content == '你好' and m.channel == channel
-#         #獲取傳訊息的資訊(message是類型，也可以用reaction_add等等動作)
-#         msg = await client.wait_for('message', check=checkmessage)
-#         await channel.send('嗨, {.author}!'.format(msg))
+@bot.command()
+async def unload(ctx, extension):
+    await bot.unload_extension(f"cmds.{extension}")
 
 
-# client.run(TOKEN)
-bot.run(TOKEN)
+
+
+# async def load_handle(ctx, botAction, app, extension=None):
+#     if ctx.author.id == HOLDER_ID:
+#         mypath, reload_path = checkPath(app)
+#         if not mypath:
+#             await ctx.message.add_reaction(REACTION_FAILURE)
+#             return
+#         if extension:
+#             try:
+#                 botAction('{}.{}'.format(reload_path, extension))
+#             except Exception as e:
+#                 await ctx.message.add_reaction(REACTION_FAILURE)
+#             await ctx.message.add_reaction(REACTION_SUCCESS)
+#             return
+#         for filename in os.listdir(mypath):
+#             if filename.endswith('.py') == False:
+#                 continue
+#             try:
+#                 # eat bot_commands/XXXX.py
+#                 botAction('{}.{}'.format(reload_path, filename[:-3]))
+#             except Exception as e:
+#                 logger.error('import commit error: {}'.format(e))
+#         await ctx.message.add_reaction(REACTION_SUCCESS)
+
+
+
+# 讀取指令
+async def load_extensions():
+    for installed_app in settings.INSTALLED_APPS:
+        app = installed_app.split('.')[0]
+        if os.path.isdir(app) == False:
+            continue
+        mypath = f'{app}/bot_commands'
+        if os.path.isdir(mypath) == False:
+            continue
+        for filename in os.listdir(mypath):
+            if filename.endswith('.py') == False:
+                continue
+            # EX: bot_commands/XXXX.py
+            fn = f'{app}.bot_commands.{filename[:-3]}'
+            print(fn)
+            await bot.load_extension(fn)
+    await bot.start(TOKEN)
+
+# async def main():
+#     async with bot:
+#         await bot.load_extension()
+#         await bot.start(TOKEN)
+
+asyncio.run(load_extensions())
+
+
+# bot.run(TOKEN)
