@@ -17,6 +17,9 @@ discord-py-slash-command==4.2.1
 discord-webhook==1.0.0
 discord-pretty-help==2.0.0
 discord-py-interactions==4.3.4
+
+hikari==2.0.0.dev113
+hikari-lightbulb==2.3.1
 # redis
 # pymemcache==3.4.4
 # channels_redis==3.3.1

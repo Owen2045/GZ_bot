@@ -44,74 +44,40 @@ async def on_ready():
             break
 
 
-@bot.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f' {member.name}, 玩砸了'
-    )
+# @bot.command()
+# async def load(ctx, extension):
+#     print(f'load.{extension}')
+#     await bot.load_extension(f"GZ_info.bot_commands.info_commands.{extension}")
 
-
-@bot.command()
-async def load(ctx, extension):
-    await bot.load_extension(f"cmds.{extension}")
+# @bot.command()
+# async def unload(ctx, extension):
+#     print(f'unload.{extension}')
+#     await bot.unload_extension(f"GZ_info.bot_commands.info_commands.{extension}")
 
 @bot.command()
-async def unload(ctx, extension):
-    await bot.unload_extension(f"cmds.{extension}")
+async def reload(ctx, extension):
+    print(f'reload.{extension}')
+    await bot.reload_extension(f"bot_commands.info_commands.{extension}")
 
-
-
-
-# async def load_handle(ctx, botAction, app, extension=None):
-#     if ctx.author.id == HOLDER_ID:
-#         mypath, reload_path = checkPath(app)
-#         if not mypath:
-#             await ctx.message.add_reaction(REACTION_FAILURE)
-#             return
-#         if extension:
-#             try:
-#                 botAction('{}.{}'.format(reload_path, extension))
-#             except Exception as e:
-#                 await ctx.message.add_reaction(REACTION_FAILURE)
-#             await ctx.message.add_reaction(REACTION_SUCCESS)
-#             return
-#         for filename in os.listdir(mypath):
-#             if filename.endswith('.py') == False:
-#                 continue
-#             try:
-#                 # eat bot_commands/XXXX.py
-#                 botAction('{}.{}'.format(reload_path, filename[:-3]))
-#             except Exception as e:
-#                 logger.error('import commit error: {}'.format(e))
-#         await ctx.message.add_reaction(REACTION_SUCCESS)
 
 
 
 # 讀取指令
-async def load_extensions():
-    for installed_app in settings.INSTALLED_APPS:
-        app = installed_app.split('.')[0]
-        if os.path.isdir(app) == False:
-            continue
-        mypath = f'{app}/bot_commands'
-        if os.path.isdir(mypath) == False:
-            continue
-        for filename in os.listdir(mypath):
-            if filename.endswith('.py') == False:
-                continue
-            # EX: bot_commands/XXXX.py
-            fn = f'{app}.bot_commands.{filename[:-3]}'
-            print(fn)
-            await bot.load_extension(fn)
-    await bot.start(TOKEN)
+# async def load_extensions():
+#     for installed_app in settings.INSTALLED_APPS:
+#         app = installed_app.split('.')[0]
+#         if os.path.isdir(app) == False:
+#             continue
+#         mypath = f'{app}/bot_commands'
+#         if os.path.isdir(mypath) == False:
+#             continue
+#         for filename in os.listdir(mypath):
+#             if filename.endswith('.py') == False:
+#                 continue
+#             fn = f'{app}.bot_commands.{filename[:-3]}'
+#             print(fn)
+#             await bot.load_extension(fn)
+#     await bot.start(TOKEN)
 
-# async def main():
-#     async with bot:
-#         await bot.load_extension()
-#         await bot.start(TOKEN)
+# asyncio.run(load_extensions())
 
-asyncio.run(load_extensions())
-
-
-# bot.run(TOKEN)
