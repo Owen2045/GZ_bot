@@ -2,18 +2,18 @@ import lightbulb
 import hikari
 
 
-plugin = lightbulb.Plugin('Example')
+plugin = lightbulb.Plugin('Info')
 
 @plugin.listener(hikari.GuildMessageCreateEvent)
 async def print_messages(event):
     print(event.content)
 
-
 @plugin.command
-@lightbulb.command(name='ex', description='一個範例')
+@lightbulb.command(name='info', description='週末加倍資訊')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def ex(ctx):
-    await ctx.respond('text1')
+
+async def info(ctx):
+    await ctx.respond('顯示週末加倍資訊')
 
 
 

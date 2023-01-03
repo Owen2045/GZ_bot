@@ -9,3 +9,14 @@ ctrl + shift + p 輸入：Python: Select Interpreter
 pip install virtualenv
 python -m venv project_name
 
+# future plan
+## GZ_info
+### 資訊指令
+```txt
+1. info > 活動資訊 
+2. note > 更新資訊    
+```
+
+
+
+

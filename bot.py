@@ -7,6 +7,7 @@ import django
 import interactions
 from discord.ext import commands
 from django.conf import settings
+from GZ_info.util import checkPath, load_handle
 from dotenv import load_dotenv
 from pretty_help import EmojiMenu, PrettyHelp
 import lightbulb
@@ -16,6 +17,7 @@ load_dotenv()
 # 環境變數
 TOKEN = os.getenv('The_Crane_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
+HOLDER_ID = os.getenv('HOLDER_ID')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',  'GZ_bot.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 logger = logging.getLogger('bot')
@@ -40,6 +42,7 @@ bot = lightbulb.BotApp(token=TOKEN, default_enabled_guilds=(995205064954236959))
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
     print('bot has started')
+    print(TOKEN, GUILD, HOLDER_ID)
 
 
 # 指令
@@ -74,11 +77,38 @@ async def add(ctx):
     await ctx.respond(ctx.options.num1 + ctx.options.num2)
 
 
+# reload
+@bot.command
+@lightbulb.option(name='extension', description='重載指定指令')
+@lightbulb.option(name='app', description='重載指定指令')
+@lightbulb.command(name='reload', description='重載指令')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def reload(ctx):
+    extension = ctx.options.extension.replace(" ", "_")
+    app = ctx.options.app.replace(" ", "_")
+    embed = hikari.Embed()
+    print(f"{app}.bot_commands.{extension}")
+    try:
+        # ctx.bot.reload_extensions("GZ_info.bot_commands.example_commans")
+        ctx.bot.reload_extensions(f"{app}.bot_commands.{extension}")
+        embed.description = f"指令: {extension} 重載成功"
+
+    except lightbulb.ExtensionNotLoaded:
+        embed.description = f"The extension {extension} could not be reloaded because it is not loaded!"
+
+    except Exception as exc:
+        embed.description = f"The extension {extension} could not be reloaded because an unexpected exception was " \
+                            f"encountered! If it was already loaded, it has not been changed!" \
+                            f"{exc}"
+
+    await ctx.respond(embed=embed)
+
+
+
+
+
+
 bot.load_extensions_from('./GZ_info/bot_commands')
-
-
-
-
 
 # 啟動
 bot.run()
