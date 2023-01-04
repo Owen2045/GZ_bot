@@ -6,14 +6,14 @@ plugin = lightbulb.Plugin('Example')
 
 @plugin.listener(hikari.GuildMessageCreateEvent)
 async def print_messages(event):
-    print(event.content)
+    pass
 
 
 @plugin.command
 @lightbulb.command(name='ex', description='一個範例')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ex(ctx):
-    await ctx.respond('text1')
+    await ctx.respond('text1dd')
 
 
 

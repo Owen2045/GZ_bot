@@ -1,26 +1,20 @@
 import lightbulb
 import hikari
-import requests
 
-plugin = lightbulb.Plugin('Info')
+
+plugin = lightbulb.Plugin('Playtool')
 
 @plugin.listener(hikari.GuildMessageCreateEvent)
 async def print_messages(event):
     pass
 
 
-
-
-
-
-
-
-
 @plugin.command
-@lightbulb.command(name='info', description='週末加倍資訊')
+@lightbulb.command(name='np', description='現在播放')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def info(ctx):
-    await ctx.respond('顯示週末加倍資訊')
+async def ex(ctx):
+    await ctx.respond('play your mon')
+
 
 
 
