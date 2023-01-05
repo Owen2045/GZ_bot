@@ -90,6 +90,10 @@ DATABASES = {
 LOGGING_CONFIG = 'logging.config.dictConfig'
 MAIN_LOG_PATH = os.path.join(BASE_DIR, 'logs/main.log')
 LOG_DIR = os.path.dirname(MAIN_LOG_PATH)
+LOG_LEVEL = 'INFO'
+if DEBUG == True:
+    LOG_LEVEL = 'DEBUG'
+    
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -104,7 +108,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            # 'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
@@ -117,11 +121,24 @@ LOGGING = {
         }
     },
     'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
         'bot': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True,
         },
+        'GZ_info': {  # means "root logger"
+            'handlers': ['console', 'file'],  # use the above "console" handler
+            'level': LOG_LEVEL,  # logging level
+        },
+        # 'MD_player': {  # means "root logger"
+        #     'handlers': ['console', 'file'],  # use the above "console" handler
+        #     'level': LOG_LEVEL,  # logging level
+        # },
+
     },
     'filters': {}
 }

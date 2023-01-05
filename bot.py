@@ -137,8 +137,6 @@ for installed_app in settings.INSTALLED_APPS:
         print(e)
         # logger.warning(f'load command warning: {extensions_file}')
 
-# bot.load_extensions_from('./GZ_info/bot_commands')
-
 
 # 啟動
 bot.run(

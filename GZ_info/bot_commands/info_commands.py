@@ -1,6 +1,10 @@
-import lightbulb
 import hikari
-import requests
+import lightbulb
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from googletrans import Translator
 
 plugin = lightbulb.Plugin('Info')
 
@@ -8,19 +12,38 @@ plugin = lightbulb.Plugin('Info')
 async def print_messages(event):
     pass
 
+# 爬週末活動
+def get_WE_info():
+    res = ''
+    try:
+        chrome_options = Options()
+        chrome_options.add_experimental_option("detach", True)
+        chrome_options.add_argument("--headless")
+        browser = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+        browser.get('https://gamezbd-info.pages.dev/timer')
+        div3 = browser.find_element(By.XPATH, '//*[@id="q-app"]/div/div[2]/div[1]/main/div/div[2]/div')
+        res = div3.text
+    except Exception as e:
+        pass
+    return res
 
-
-
-
-
-
-
+def do_trans(data_str):
+    ev_info = ''
+    if isinstance(data_str, str):
+        str_list = data_str.split('\n')
+        translator = Translator()
+        zh_obj_list = translator.translate(str_list, dest='zh-tw')
+        zh_list = [x.text for x in zh_obj_list if x]
+        ev_info = '\n'.join(zh_list)
+    return ev_info
 
 @plugin.command
 @lightbulb.command(name='info', description='週末加倍資訊')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def info(ctx):
-    await ctx.respond('顯示週末加倍資訊')
+    result_en = get_WE_info()
+    result_zh = do_trans(result_en)
+    await ctx.respond(result_zh)
 
 
 
