@@ -2,6 +2,8 @@ import hikari
 import lightbulb
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from googletrans import Translator
@@ -19,7 +21,7 @@ def get_WE_info():
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
         chrome_options.add_argument("--headless")
-        browser = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         browser.get('https://gamezbd-info.pages.dev/timer')
         div3 = browser.find_element(By.XPATH, '//*[@id="q-app"]/div/div[2]/div[1]/main/div/div[2]/div')
         res = div3.text
@@ -28,13 +30,13 @@ def get_WE_info():
     return res
 
 def do_trans(data_str):
-    ev_info = ''
+    ev_info = 'get data fail ;('
     if isinstance(data_str, str):
         str_list = data_str.split('\n')
         translator = Translator()
         zh_obj_list = translator.translate(str_list, dest='zh-tw')
         zh_list = [x.text for x in zh_obj_list if x]
-        ev_info = '\n'.join(zh_list)
+        ev_info = '\n'.join(zh_list[:-1])
     return ev_info
 
 @plugin.command
@@ -45,6 +47,14 @@ async def info(ctx):
     result_zh = do_trans(result_en)
     await ctx.respond(result_zh)
 
+
+
+
+@plugin.command
+@lightbulb.command(name='patch', description='更新資訊')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def info(ctx):
+    await ctx.respond(';(')
 
 
 

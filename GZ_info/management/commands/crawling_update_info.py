@@ -25,9 +25,9 @@ logger = logging.getLogger('GZ_info')
 
 class Command(BaseCommand):
     """
-    test
+    爬更新原文
     """
-    help = 'test'
+    help = '爬更新原文'
     
     def check_info(self):
         qs = UpdateInfo.objects.all().order_by('-info_time')

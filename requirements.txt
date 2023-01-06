@@ -4,6 +4,10 @@ django-crontab==0.7.1
 django-allauth==0.49.0
 django-bootstrap-v5
 
+# 資料庫
+mysqlclient==2.1.0
+PyMySQL==1.0.2
+
 # 通知
 django-notifications-hq==1.7.0
 channels==3.0.3
@@ -16,6 +20,7 @@ webdriver-manager==3.8.5
 
 # env
 python-dotenv==0.21.0
+python-decouple==3.6
 
 # 翻譯
 googletrans==3.1.0a0

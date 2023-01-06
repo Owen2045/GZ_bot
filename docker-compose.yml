@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  db:
+    image: mariadb:10.6.7
+    container_name: GZ_bot_mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=sam24659482
+      - MYSQL_DATABASE=GZ_bot
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=sam24659482
+    ports:
+      - '3304:3306'
+
+  web:
+    build: .
+    container_name: GZ_bot_django
+    command:
+        # python manage.py runserver 8000
+        python bot.py
+    restart: always
+    ports:
+      - "8000:8000"
+      - "5555:5555"
+    volumes:
+      - .:/var/www/html/GZ_bot
+    depends_on:
+      - db
