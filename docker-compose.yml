@@ -6,10 +6,10 @@ services:
     container_name: GZ_bot_mariadb
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=sam24659482
-      - MYSQL_DATABASE=GZ_bot
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=123
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=sam24659482
+      - MYSQL_PASSWORD=123
     ports:
       - '3304:3306'
 
