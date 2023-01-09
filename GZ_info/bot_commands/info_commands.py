@@ -1,18 +1,25 @@
+import asyncio
+import time
+import miru
 import hikari
 import lightbulb
+from googletrans import Translator
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from googletrans import Translator
+
+from GZ_info.bot_settings import BasicView
 
 plugin = lightbulb.Plugin('Info')
 
 @plugin.listener(hikari.GuildMessageCreateEvent)
 async def print_messages(event):
     pass
+
+
+
 
 # 爬週末活動
 def get_WE_info():
@@ -40,25 +47,41 @@ def do_trans(data_str):
     return ev_info
 
 @plugin.command
-@lightbulb.command(name='info', description='週末加倍資訊')
+@lightbulb.command(name='info', description='週末加倍資訊', auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def info(ctx):
     result_en = get_WE_info()
     result_zh = do_trans(result_en)
-    await ctx.respond(result_zh)
-
-
+    await ctx.respond(result_zh) # , hikari.ResponseType.DEFERRED_MESSAGE_CREATE 
 
 
 @plugin.command
-@lightbulb.command(name='patch', description='更新資訊')
+@lightbulb.command(name='patch', description='更新資訊') # , auto_defer=True
 @lightbulb.implements(lightbulb.SlashCommand)
-async def info(ctx):
-    await ctx.respond(';(')
+async def patch(ctx):
+    a = [miru.SelectOption(label="Option 1"), miru.SelectOption(label="Option 2")]
+    view = BasicView(timeout=5)
+
+    
+    message = await ctx.respond("Rock 熟!", components=view)
+    await view.start(message)  # Start listening for interactions
+    await view.wait() # Wait until the view times out or gets stopped
+    await ctx.respond("ching chong ching chong")
+
+
+    # await ctx.respond(';(')
 
 
 
-
+# @bot.command
+# @lightbulb.command(name='buttons', description='buttons test')
+# @lightbulb.implements(lightbulb.SlashCommand)
+# async def buttons(ctx):
+#     view = BasicView(timeout=5)
+#     message = await ctx.respond("Rock Paper Scissors!", components=view)
+#     await view.start(message)  # Start listening for interactions
+#     await view.wait() # Wait until the view times out or gets stopped
+#     # await event.message.respond("Thank you for playing!")
 
 
 

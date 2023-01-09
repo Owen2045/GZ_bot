@@ -1,21 +1,17 @@
 import logging
 import os
-import random
-import asyncio
-import discord
 import django
-import interactions
-from discord.ext import commands
 from django.conf import settings
 from GZ_info.bot_settings import choose_colour
 from dotenv import load_dotenv
-from pretty_help import EmojiMenu, PrettyHelp
 import lightbulb
 import hikari
+import miru
 
 load_dotenv()
 # 環境變數
-TOKEN = os.getenv('The_Crane_TOKEN')
+# TOKEN = os.getenv('The_Crane_TOKEN')
+TOKEN = os.getenv('The_Crane__dev_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 HOLDER_ID = os.getenv('HOLDER_ID')
 DF_GUILDS = os.getenv('DF_GUILDS')
@@ -25,21 +21,13 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 logger = logging.getLogger('bot')
 django.setup()
 
-# intents = discord.Intents.default()
-# intents = 權限
-# intents.members = True
-# intents.message_content = True
-# intents.messages = True
-# client = discord.Client(intents=intents)
-# bot = commands.Bot(command_prefix="!", intents=intents)
 
-# menu = EmojiMenu(active_time=60)
-# ending_note = "{ctx.bot.user.name}的使用說明"
-# bot.help_command = PrettyHelp(menu=menu, ending_note=ending_note)
-
-
-bot = lightbulb.BotApp(token=TOKEN, default_enabled_guilds=(DF_GUILDS,)) # , help_slash_command=True, intents=hikari.Intents.ALL
-
+bot = lightbulb.BotApp(
+                        token=TOKEN, 
+                        default_enabled_guilds=(DF_GUILDS,),
+                        intents=hikari.Intents.ALL,
+                    ) # , help_slash_command=True, intents=hikari.Intents.ALL
+# bot_2 = hikari.GatewayBot(token=TOKEN) # , help_slash_command=True, intents=hikari.Intents.ALL
 # 啟動訊息
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
@@ -76,16 +64,15 @@ async def job(ctx):
 @bot.command
 @lightbulb.option(name='num1', description='輸入第一個數字', type=int)
 @lightbulb.option(name='num2', description='輸入第二個數字', type=int)
-@lightbulb.command(name='add', description='相加人')
+@lightbulb.command(name='add', description='相加人', auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def add(ctx):
     await ctx.respond(ctx.options.num1 + ctx.options.num2)
-# **=====================**
+# **=======================================================================**
 
 
 # reload
 @bot.command
-# @lightbulb.option(name='extension', description='重載指定指令')
 @lightbulb.option(name='app', description='重載指定指令')
 @lightbulb.command(name='reload', description='重載指令')
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -114,12 +101,15 @@ async def reload(ctx):
                     exc_msg = f'{app}.{filename}'
                     exc.append(exc_msg)
 
-    await ctx.respond(hikari.Embed(
+    await ctx.respond(
+                    hikari.Embed(
                         title="reload", 
                         description='\n'.join(succ), 
                         color=choose_colour())
                     )
 
+
+miru.install(bot)
 
 # 讀app所有指令
 for installed_app in settings.INSTALLED_APPS:
@@ -136,6 +126,7 @@ for installed_app in settings.INSTALLED_APPS:
     except Exception as e:
         print(e)
         # logger.warning(f'load command warning: {extensions_file}')
+
 
 
 # 啟動
