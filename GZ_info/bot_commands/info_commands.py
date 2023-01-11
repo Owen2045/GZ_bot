@@ -3,6 +3,8 @@ import time
 import miru
 import hikari
 import lightbulb
+from psutil import Process, virtual_memory
+
 from googletrans import Translator
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -10,7 +12,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-from GZ_info.bot_settings import BasicView
+from GZ_info.bot_settings import YesButton, SelectMenu, ExitButton
 
 plugin = lightbulb.Plugin('Info')
 
@@ -36,6 +38,7 @@ def get_WE_info():
         pass
     return res
 
+# 翻譯
 def do_trans(data_str):
     ev_info = 'get data fail ;('
     if isinstance(data_str, str):
@@ -45,6 +48,9 @@ def do_trans(data_str):
         zh_list = [x.text for x in zh_obj_list if x]
         ev_info = '\n'.join(zh_list[:-1])
     return ev_info
+
+
+
 
 @plugin.command
 @lightbulb.command(name='info', description='週末加倍資訊', auto_defer=True)
@@ -59,29 +65,16 @@ async def info(ctx):
 @lightbulb.command(name='patch', description='更新資訊') # , auto_defer=True
 @lightbulb.implements(lightbulb.SlashCommand)
 async def patch(ctx):
-    a = [miru.SelectOption(label="Option 1"), miru.SelectOption(label="Option 2")]
-    view = BasicView(timeout=5)
-
     
-    message = await ctx.respond("Rock 熟!", components=view)
+    # view = BasicView(timeout=100) # 使用自定義view
+    view = miru.View(timeout=100)
+    view.add_item(SelectMenu(options=[miru.SelectOption(label="館長"), miru.SelectOption(label="山羌")]))
+    view.add_item(ExitButton(style=hikari.ButtonStyle.DANGER, label="結束查詢"))  
+    message = await ctx.respond("選擇你的書記", components=view)
     await view.start(message)  # Start listening for interactions
     await view.wait() # Wait until the view times out or gets stopped
-    await ctx.respond("ching chong ching chong")
+    await ctx.respond('時間到摟 小婊子')
 
-
-    # await ctx.respond(';(')
-
-
-
-# @bot.command
-# @lightbulb.command(name='buttons', description='buttons test')
-# @lightbulb.implements(lightbulb.SlashCommand)
-# async def buttons(ctx):
-#     view = BasicView(timeout=5)
-#     message = await ctx.respond("Rock Paper Scissors!", components=view)
-#     await view.start(message)  # Start listening for interactions
-#     await view.wait() # Wait until the view times out or gets stopped
-#     # await event.message.respond("Thank you for playing!")
 
 
 

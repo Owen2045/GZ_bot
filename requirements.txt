@@ -40,6 +40,7 @@ hikari-miru==2.0.1
 
 # tools
 pandas==1.5.2
+psutil==5.9.4
 # redis
 # pymemcache==3.4.4
 # channels_redis==3.3.1
