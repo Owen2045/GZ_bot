@@ -25,41 +25,11 @@ class Command(BaseCommand):
     """
     help = '解析+翻譯更新資訊'
     
-    def tran_info(self, data):
-        ud_info = ''
-        if isinstance(data, str):
-            str_list = data.split('\n')
-            ud_list = []
-            coup_list = []
-            evurl_list = []
-            coup_re = r'- \w{4}-\w{4}-\w{4}-\w{4}'
 
-            for spec in str_list:
-                if spec == '[COUPONS]':
-                    coup_list.append('[優惠券]')
-                elif re.match(coup_re, spec):
-                    coup_list.append(spec)
-                elif spec == '[EVENTS]':
-                    evurl_list.append('[活動網址]')
-                elif spec.startswith('- https:'):
-                    evurl_list.append(spec)
-                else:
-                    ud_list.append(spec)
-
-            translator = Translator()
-            zh_obj_list = translator.translate(ud_list, dest='zh-tw')
-            
-            zh_list = [x.text for x in zh_obj_list if x]
-            zh_list.extend(coup_list)
-            zh_list.extend(evurl_list)
-            ud_info = '\n'.join(zh_list)
-        return ud_info
 
     def handle(self, *args, **options):
-        qs = UpdateInfo.objects.filter(id=3)
-        for i in qs:
-            # print(i.info_time)
-            print(i.update_info_zh)
-
+        qs = UpdateInfo.objects.all().order_by('-id').values('info_time', 'info_time_str', 'update_info_en', 'update_info_zh', 'url')
+        df = pd.DataFrame(qs, dtype=object)
+        date_list = df['info_time_str'].tolist()
 
 

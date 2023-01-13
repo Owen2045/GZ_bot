@@ -4,6 +4,7 @@ import hikari
 import typing as t
 import asyncio
 import datetime
+import lightbulb
 
 
 def choose_colour():
@@ -55,12 +56,6 @@ class BasicModal(miru.Modal):
 
 
 class BasicView(miru.View):
-    # def __init__(self, *args, **kwargs) -> None:
-    #     super().__init__(*args, **kwargs)
-
-    # def __init__(self) -> None:
-    #     super().__init__(timeout=None)
-
     # 建立基本的view
     async def basic_select(self, select: miru.Select, ctx: miru.ViewContext) -> None:
         await ctx.respond(f"你選了 {select.values[0]}!")
@@ -103,11 +98,67 @@ class ExitButton(miru.Button):
         self.view.stop()
 
 class SelectMenu(miru.Select):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, df, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        
+        self.df = df
+
     async def callback(self, ctx: miru.ViewContext) -> None:
         select_value = ctx.interaction.values[0]
-        await ctx.respond(f"按 ： {select_value}", flags=hikari.MessageFlag.EPHEMERAL)
-        # self.view.answer = True
-        # self.view.stop()
+        df_date = self.df[self.df['info_time_str']==select_value]
+        df_dict = df_date.to_dict('records')
+        if len(df_dict) > 0:
+            df_dict = df_dict[0]
+            select_time = df_dict.get('info_time_str')
+            url = df_dict.get('url')
+            en = df_dict.get('update_info_en')
+            zh = df_dict.get('update_info_zh')
+            await ctx.respond(f"{zh} \n\n原網址: {url}", flags=hikari.MessageFlag.EPHEMERAL)
+        else:
+            await ctx.respond(f"{select_value}: 查無更新資訊", flags=hikari.MessageFlag.EPHEMERAL)
+
+class CustomHelp(lightbulb.BaseHelpCommand):
+    async def send_bot_help(self, context):
+        embed = (
+            hikari.Embed(
+                title="command helper", 
+                description="""哦 要來了嗎""",
+                colour=choose_colour(),
+            )
+            .set_author(
+                name=f"{context.author.username} ching chong!",
+                icon=context.author.avatar_url or context.author.default_avatar_url,
+            )
+            .set_thumbnail(
+                context.bot.get_me().avatar_url or context.bot.get_me().default_avatar_url
+            )
+            # 加一個就一行
+            .add_field("Staff commands", "/kick\n/ban\n/unban\n/timeout\n/snipe", inline=True)
+        )
+        embed.set_footer("最底了 老哥")
+
+        await context.respond(embed)
+
+    async def send_plugin_help(self, context, plugin):
+        await context.respond(';(')
+        pass
+        # Override this method to change the message sent when the help command
+        # 輸入為plugin名稱
+        ...
+
+    async def send_command_help(self, context, command):
+        await context.respond(':O')
+        pass
+        # Override this method to change the message sent when the help command
+        # 輸入為/指令
+        ...
+
+    async def send_group_help(self, context, group):
+        pass
+        # Override this method to change the message sent when the help command
+        # 輸入為群組指令
+        ...
+
+    async def object_not_found(self, context, obj):
+        pass
+        # Override this method to change the message sent when help is
+        # requested for an object that does not exist

@@ -27,8 +27,11 @@ google-chrome --version
 ## GZ_info
 ### 資訊指令
 ```txt
-1. info > 活動資訊 
-2. note > 更新資訊    
+1. info > 活動資訊 DONE
+2. note > 更新資訊 DONE
+3. note > 台服更新資訊
+4. 個人記事本
+5. thinking   
 ```
 
 

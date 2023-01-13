@@ -2,7 +2,7 @@ import logging
 import os
 import django
 from django.conf import settings
-from GZ_info.bot_settings import choose_colour
+from GZ_info.bot_settings import choose_colour, CustomHelp
 from dotenv import load_dotenv
 import lightbulb
 import hikari
@@ -26,7 +26,9 @@ bot = lightbulb.BotApp(
                         token=TOKEN, 
                         default_enabled_guilds=(DF_GUILDS,),
                         intents=hikari.Intents.ALL,
-                    ) # , help_slash_command=True, intents=hikari.Intents.ALL
+                        help_class=CustomHelp,
+                        help_slash_command=True,
+                    ) # , 
 # bot_2 = hikari.GatewayBot(token=TOKEN) # , help_slash_command=True, intents=hikari.Intents.ALL
 # 啟動訊息
 @bot.listen(hikari.StartedEvent)
@@ -108,7 +110,7 @@ async def reload(ctx):
                         color=choose_colour())
                     )
 
-
+# 讀
 miru.install(bot)
 
 # 讀app所有指令

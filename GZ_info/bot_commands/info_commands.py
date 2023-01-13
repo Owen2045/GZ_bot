@@ -3,6 +3,7 @@ import time
 import miru
 import hikari
 import lightbulb
+import pandas as pd
 from psutil import Process, virtual_memory
 
 from googletrans import Translator
@@ -11,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-
+from GZ_info.models import UpdateInfo
 from GZ_info.bot_settings import YesButton, SelectMenu, ExitButton
 
 plugin = lightbulb.Plugin('Info')
@@ -49,7 +50,12 @@ def do_trans(data_str):
         ev_info = '\n'.join(zh_list[:-1])
     return ev_info
 
-
+# 取更新資訊
+def get_update_info():
+    qs = UpdateInfo.objects.all().order_by('-id').values('info_time', 'info_time_str', 'update_info_en', 'update_info_zh', 'url')
+    df = pd.DataFrame(qs, dtype=object)
+    date_list = df['info_time_str'].tolist()
+    return date_list, df
 
 
 @plugin.command
@@ -65,10 +71,10 @@ async def info(ctx):
 @lightbulb.command(name='patch', description='更新資訊') # , auto_defer=True
 @lightbulb.implements(lightbulb.SlashCommand)
 async def patch(ctx):
-    
+    date_list, df = get_update_info()
     # view = BasicView(timeout=100) # 使用自定義view
     view = miru.View(timeout=100)
-    view.add_item(SelectMenu(options=[miru.SelectOption(label="館長"), miru.SelectOption(label="山羌")]))
+    view.add_item(SelectMenu(df=df, options=[miru.SelectOption(label=x) for x in date_list]))
     view.add_item(ExitButton(style=hikari.ButtonStyle.DANGER, label="結束查詢"))  
     message = await ctx.respond("選擇你的書記", components=view)
     await view.start(message)  # Start listening for interactions
