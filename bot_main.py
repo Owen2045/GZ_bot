@@ -134,7 +134,7 @@ for installed_app in settings.INSTALLED_APPS:
 # 啟動
 bot.run(
     activity=hikari.Activity(
-        name='正與你媽在SWAG上見面',
+        name='test online',
         type=hikari.ActivityType.COMPETING,
     )
 )
